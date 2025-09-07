@@ -1,11 +1,18 @@
 "use client";
 
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+
 import DotGrid from "@/blocks/Backgrounds/DotGrid/DotGrid";
 import SpotlightCard from "@/blocks/Components/SpotlightCard/SpotlightCard";
 import { AnimatedModalDemo } from "@/components/AnimatedModalDemo";
 import { motion } from "motion/react";
 
-export default function Page() {
+function FindInner() {
+  // ✅ 필요할 때 쓸 수 있는 안전한 useSearchParams
+  const params = useSearchParams();
+  const q = params.get("q") ?? ""; // 예: /find?q=ai
+
   return (
     <main className="relative min-h-screen overflow-hidden">
       {/* 배경 */}
@@ -63,9 +70,7 @@ export default function Page() {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="text-4xl md:text-5xl font-bold tracking-tight leading-snug"
           >
-            <span
-              className="relative inline-block bg-gradient-to-r from-white to-[#A08CFF] bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(82,39,255,0.35)] before:absolute before:inset-0 before:bg-white before:opacity-0 before:transition-opacity before:duration-500 before:pointer-events-none hover:before:opacity-[0.03]"
-            >
+            <span className="relative inline-block bg-gradient-to-r from-white to-[#A08CFF] bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(82,39,255,0.35)] before:absolute before:inset-0 before:bg-white before:opacity-0 before:transition-opacity before:duration-500 before:pointer-events-none hover:before:opacity-[0.03]">
               Start project with partner
             </span>
           </motion.h1>
@@ -79,8 +84,23 @@ export default function Page() {
             Every big idea starts with a conversation. <br />
             Find your co-founder today and turn vision into reality.
           </motion.p>
+
+          {/* (옵션) 쿼리 배지 예시: /find?q=ai */}
+          {q && (
+            <div className="mt-3 inline-block rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
+              Searching for: <span className="text-white">{q}</span>
+            </div>
+          )}
         </div>
       </div>
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="text-white/70 p-4">Loading…</div>}>
+      <FindInner />
+    </Suspense>
   );
 }
