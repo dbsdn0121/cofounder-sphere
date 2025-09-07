@@ -1,22 +1,14 @@
+// lib/supabase.ts
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 /**
- * 기본 anon Supabase 클라이언트
- * - 클라이언트/서버 공용으로 가볍게 사용할 때
- * - 인증 토큰 주입 없이 public 정책으로 접근
- */
-export const supabase: SupabaseClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-/**
- * Clerk의 getToken을 주입해, 매 요청에 Authorization 헤더(Clerk JWT)를 실어주는
- * 브라우저용 Supabase 클라이언트 생성기.
+ * Clerk의 getToken 함수를 주입받아,
+ * 매 요청마다 Authorization 헤더에 Clerk JWT를 실어주는
+ * 브라우저용 Supabase 클라이언트를 생성한다.
  *
  * 사용 예:
  *   const { getToken } = useAuth();
- *   const supa = createBrowserSupabase(() => getToken({ template: "supabase" }));
+ *   const supabase = createBrowserSupabase(() => getToken({ template: "supabase" }));
  */
 export function createBrowserSupabase(
   getToken: (args?: { template?: string }) => Promise<string | null>
@@ -24,28 +16,34 @@ export function createBrowserSupabase(
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-  // 매 호출 시 Clerk JWT를 Authorization 헤더로 주입하는 fetch 래퍼
+  // fetch 인터셉터: 매 호출 시 Clerk JWT를 Authorization 헤더로 주입
   const injectedFetch: typeof fetch = async (input, init) => {
     const token = await getToken?.({ template: "supabase" });
     const headers = new Headers(init?.headers || {});
-    if (token) headers.set("Authorization", `Bearer ${token}`);
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
     return fetch(input, { ...init, headers });
   };
 
-  return createClient(supabaseUrl, supabaseAnonKey, {
-    global: { fetch: injectedFetch },
+  const client = createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      fetch: injectedFetch,
+    },
   });
+
+  return client;
 }
 
 /**
- * Clerk userId(= JWT sub) 로 profiles에서 사용자 프로필을 가져온다.
- * 없으면 null, 에러면 throw.
+ * Clerk userId(= JWT sub)로 profiles에서 사용자 프로필을 가져온다.
+ * 없으면 null. 에러면 throw.
  */
 export async function getCurrentUserProfileByClerk(
-  client: SupabaseClient,
+  supabase: SupabaseClient,
   clerkUserId: string
 ) {
-  const { data, error } = await client
+  const { data, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("clerk_user_id", clerkUserId)
@@ -56,15 +54,14 @@ export async function getCurrentUserProfileByClerk(
 }
 
 /**
- * 프로필이 없으면 생성하고, 있으면 기존 값을 반환.
- * defaults로 초기값을 추가 설정 가능.
+ * 필요시: 프로필이 없으면 만들어주는 헬퍼 (선택)
  */
 export async function ensureProfileByClerk(
-  client: SupabaseClient,
+  supabase: SupabaseClient,
   clerkUserId: string,
-  defaults?: Record<string, unknown>
+  defaults?: Record<string, any>
 ) {
-  const current = await getCurrentUserProfileByClerk(client, clerkUserId);
+  const current = await getCurrentUserProfileByClerk(supabase, clerkUserId);
   if (current) return current;
 
   const payload = {
@@ -72,7 +69,7 @@ export async function ensureProfileByClerk(
     ...(defaults || {}),
   };
 
-  const { data, error } = await client
+  const { data, error } = await supabase
     .from("profiles")
     .insert(payload)
     .select("*")

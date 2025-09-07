@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
-import { useMatchingResults } from "../../../../../hooks/useMatchingResults";
+import { useMatchingResults } from '../../../../../hooks/useMatchingResults';
 import {
   MessageCircle,
   Eye,
@@ -16,8 +16,10 @@ import {
   Github,
   Linkedin,
   X,
+  Filter,
   RotateCcw,
   Sparkles,
+  Star,
   Target,
   Zap,
   Loader2,
@@ -30,40 +32,33 @@ const transformMatchData = (realMatches: any[]) => {
   return realMatches.map((match, index) => ({
     id: match.profile.id,
     name: match.profile.displayName,
-    avatar:
-      match.profile.avatarUrl ||
-      `https://images.unsplash.com/photo-150700321116${index % 20}?w=150&h=150&fit=crop&crop=face`,
+    avatar: match.profile.avatarUrl || `https://images.unsplash.com/photo-150700321116${index % 20}?w=150&h=150&fit=crop&crop=face`,
     role: match.profile.role || "Developer",
-    headline:
-      match.profile.headline ||
-      "Looking for co-founder to build something amazing",
+    headline: match.profile.headline || "Looking for co-founder to build something amazing",
     status: match.profile.status || "Student",
     matchScore: match.matchPercentage,
-    location: "Location not set", // TODO
+    location: "Location not set", // TODO: 위치 정보 추가 필요
     skills: match.profile.skills || [],
     workStyles: match.profile.workStyles || [],
     industries: match.profile.industries || [],
-    currentProject: match.profile.currentProjects?.[0]
-      ? {
-          name: match.profile.currentProjects[0].name,
-          description: match.profile.currentProjects[0].description,
-          status: match.profile.currentProjects[0].status,
-        }
-      : null,
+    currentProject: match.profile.currentProjects?.[0] ? {
+      name: match.profile.currentProjects[0].name,
+      description: match.profile.currentProjects[0].description,
+      status: match.profile.currentProjects[0].status
+    } : null,
     links: {
       github: match.profile.github,
       linkedin: match.profile.linkedin,
-      portfolio: match.profile.website,
+      portfolio: match.profile.website
     },
-    followers: "N/A",
-    views: "N/A",
-    engagement: "N/A",
-    isOnline: Math.random() > 0.5,
+    followers: "N/A", // TODO: 실제 팔로워 수 추가 필요
+    views: "N/A", // TODO: 실제 조회수 추가 필요
+    engagement: "N/A", // TODO: 실제 참여율 추가 필요
+    isOnline: Math.random() > 0.5 // TODO: 실제 온라인 상태 추가 필요
   }));
 };
 
-// ✅ 기존 페이지 내용을 그대로 감싸기 위해 내부 컴포넌트로 분리
-function ResultsInner() {
+export default function MatchingResultsPage() {
   const router = useRouter();
   const { matches: realMatches, loading, error } = useMatchingResults();
   const [matches, setMatches] = useState<any[]>([]);
@@ -80,15 +75,14 @@ function ResultsInner() {
     }
   }, [realMatches]);
 
-  const filteredMatches =
-    selectedFilter === "all"
-      ? matches
-      : matches.filter((match) => match.role === selectedFilter);
+  const filteredMatches = selectedFilter === "all" 
+    ? matches 
+    : matches.filter(match => match.role === selectedFilter);
 
   const toggleLike = (matchId: string) => {
-    setLikedMatches((prev) =>
-      prev.includes(matchId)
-        ? prev.filter((id) => id !== matchId)
+    setLikedMatches(prev => 
+      prev.includes(matchId) 
+        ? prev.filter(id => id !== matchId)
         : [...prev, matchId]
     );
   };
@@ -97,23 +91,29 @@ function ResultsInner() {
     try {
       setSendingMessage(matchedUserId);
 
-      const response = await fetch("/api/conversations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ withUserId: matchedUserId }),
+      const response = await fetch('/api/conversations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          withUserId: matchedUserId
+        })
       });
 
       const result = await response.json();
-
+      
       if (result.success) {
+        // 대화방으로 이동
         router.push(`/messages?chat=${result.data.conversation.id}`);
       } else {
-        console.error("Failed to create conversation:", result.error);
-        alert("Failed to start conversation. Please try again.");
+        console.error('Failed to create conversation:', result.error);
+        // TODO: 에러 토스트 알림 추가
+        alert('Failed to start conversation. Please try again.');
       }
     } catch (error) {
-      console.error("Error starting conversation:", error);
-      alert("Something went wrong. Please try again.");
+      console.error('Error starting conversation:', error);
+      alert('Something went wrong. Please try again.');
     } finally {
       setSendingMessage(null);
     }
@@ -122,23 +122,17 @@ function ResultsInner() {
   const getMatchScoreColor = (score: number) => {
     if (score >= 90) return "text-green-400 border-green-500/30 bg-green-500/10";
     if (score >= 80) return "text-blue-400 border-blue-500/30 bg-blue-500/10";
-    if (score >= 70)
-      return "text-yellow-400 border-yellow-500/30 bg-yellow-500/10";
+    if (score >= 70) return "text-yellow-400 border-yellow-500/30 bg-yellow-500/10";
     return "text-gray-400 border-gray-500/30 bg-gray-500/10";
   };
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case "Developer":
-        return <Code className="h-4 w-4" />;
-      case "Designer":
-        return <Sparkles className="h-4 w-4" />;
-      case "Product":
-        return <Target className="h-4 w-4" />;
-      case "Biz/Marketing":
-        return <Zap className="h-4 w-4" />;
-      default:
-        return <Briefcase className="h-4 w-4" />;
+      case "Developer": return <Code className="h-4 w-4" />;
+      case "Designer": return <Sparkles className="h-4 w-4" />;
+      case "Product": return <Target className="h-4 w-4" />;
+      case "Biz/Marketing": return <Zap className="h-4 w-4" />;
+      default: return <Briefcase className="h-4 w-4" />;
     }
   };
 
@@ -154,34 +148,29 @@ function ResultsInner() {
                 Your Matches
               </h1>
               <p className="text-white/60 text-sm mt-1">
-                {loading
-                  ? "Loading matches..."
-                  : error
-                  ? "Error loading matches"
-                  : matches.length === 0
-                  ? "No matches found yet"
-                  : `Showing 1-${filteredMatches.length} of ${matches.length} potential co-founders`}
+                {loading ? "Loading matches..." : 
+                 error ? "Error loading matches" :
+                 matches.length === 0 ? "No matches found yet" :
+                 `Showing 1-${filteredMatches.length} of ${matches.length} potential co-founders`}
               </p>
             </div>
-
+            
             <div className="flex items-center gap-4">
               {/* Filter */}
               <div className="flex bg-zinc-900/60 border border-white/10 rounded-xl p-1">
-                {(["all", "Developer", "Designer", "Product", "Biz/Marketing"] as FilterType[]).map(
-                  (filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setSelectedFilter(filter)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                        selectedFilter === filter
-                          ? "bg-white text-black"
-                          : "text-white/70 hover:text-white hover:bg-white/10"
-                      }`}
-                    >
-                      {filter === "all" ? "All" : filter}
-                    </button>
-                  )
-                )}
+                {(["all", "Developer", "Designer", "Product", "Biz/Marketing"] as FilterType[]).map((filter) => (
+                  <button
+                    key={filter}
+                    onClick={() => setSelectedFilter(filter)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      selectedFilter === filter
+                        ? "bg-white text-black"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    {filter === "all" ? "All" : filter}
+                  </button>
+                ))}
               </div>
 
               <button className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all">
@@ -205,9 +194,7 @@ function ResultsInner() {
       {error && (
         <div className="max-w-7xl mx-auto px-4 py-16 text-center">
           <div className="text-red-400 mb-2">Error: {error}</div>
-          <div className="text-white/60">
-            Please try refreshing or check back later
-          </div>
+          <div className="text-white/60">Please try refreshing or check back later</div>
         </div>
       )}
 
@@ -215,9 +202,7 @@ function ResultsInner() {
       {!loading && !error && matches.length === 0 && (
         <div className="max-w-7xl mx-auto px-4 py-16 text-center">
           <Heart className="h-16 w-16 mx-auto mb-4 text-white/30" />
-          <div className="text-xl font-semibold text-white mb-2">
-            No matches found yet
-          </div>
+          <div className="text-xl font-semibold text-white mb-2">No matches found yet</div>
           <div className="text-white/60">
             Complete your onboarding to start finding potential co-founders!
           </div>
@@ -265,11 +250,7 @@ function ResultsInner() {
                   </div>
 
                   {/* Match Score */}
-                  <div
-                    className={`px-3 py-1 rounded-full border text-xs font-bold ${getMatchScoreColor(
-                      match.matchScore
-                    )}`}
-                  >
+                  <div className={`px-3 py-1 rounded-full border text-xs font-bold ${getMatchScoreColor(match.matchScore)}`}>
                     {match.matchScore}%
                   </div>
                 </div>
@@ -322,13 +303,9 @@ function ResultsInner() {
                 {match.currentProject && (
                   <div className="bg-zinc-900/50 rounded-lg p-3 mb-4">
                     <div className="flex items-center gap-2 mb-1">
-                      <div
-                        className={`w-2 h-2 rounded-full ${
-                          match.currentProject.status === "Recruiting"
-                            ? "bg-green-400"
-                            : "bg-blue-400"
-                        }`}
-                      />
+                      <div className={`w-2 h-2 rounded-full ${
+                        match.currentProject.status === "Recruiting" ? "bg-green-400" : "bg-blue-400"
+                      }`} />
                       <span className="text-xs font-medium text-white/90">
                         {match.currentProject.name}
                       </span>
@@ -354,9 +331,9 @@ function ResultsInner() {
                     ) : (
                       <MessageCircle className="h-4 w-4" />
                     )}
-                    {sendingMessage === match.id ? "Starting..." : "Message"}
+                    {sendingMessage === match.id ? 'Starting...' : 'Message'}
                   </button>
-
+                  
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -368,11 +345,7 @@ function ResultsInner() {
                         : "border-white/20 bg-white/10 text-white/60 hover:text-pink-400 hover:border-pink-500/50"
                     }`}
                   >
-                    <Heart
-                      className={`h-4 w-4 ${
-                        likedMatches.includes(match.id) ? "fill-current" : ""
-                      }`}
-                    />
+                    <Heart className={`h-4 w-4 ${likedMatches.includes(match.id) ? "fill-current" : ""}`} />
                   </button>
                 </div>
 
@@ -436,11 +409,7 @@ function ResultsInner() {
                     </span>
                   </div>
                 </div>
-                <div
-                  className={`px-4 py-2 rounded-full border font-bold ${getMatchScoreColor(
-                    selectedMatch.matchScore
-                  )}`}
-                >
+                <div className={`px-4 py-2 rounded-full border font-bold ${getMatchScoreColor(selectedMatch.matchScore)}`}>
                   {selectedMatch.matchScore}% Match
                 </div>
               </div>
@@ -451,10 +420,7 @@ function ResultsInner() {
                   <h4 className="font-semibold mb-3">Skills</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedMatch.skills.map((skill: string, idx: number) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-blue-500/20 text-blue-400 text-sm rounded-full"
-                      >
+                      <span key={idx} className="px-3 py-1 bg-blue-500/20 text-blue-400 text-sm rounded-full">
                         {skill}
                       </span>
                     ))}
@@ -464,10 +430,7 @@ function ResultsInner() {
                   <h4 className="font-semibold mb-3">Work Style</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedMatch.workStyles.map((style: string, idx: number) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-purple-500/20 text-purple-400 text-sm rounded-full"
-                      >
+                      <span key={idx} className="px-3 py-1 bg-purple-500/20 text-purple-400 text-sm rounded-full">
                         {style}
                       </span>
                     ))}
@@ -480,10 +443,7 @@ function ResultsInner() {
                 <h4 className="font-semibold mb-3">Industries of Interest</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedMatch.industries.map((industry: string, idx: number) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 bg-green-500/20 text-green-400 text-sm rounded-full"
-                    >
+                    <span key={idx} className="px-3 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">
                       {industry}
                     </span>
                   ))}
@@ -496,29 +456,19 @@ function ResultsInner() {
                   <h4 className="font-semibold mb-3">Current Project</h4>
                   <div className="bg-zinc-900/50 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <div
-                        className={`w-3 h-3 rounded-full ${
-                          selectedMatch.currentProject.status === "Recruiting"
-                            ? "bg-green-400"
-                            : "bg-blue-400"
-                        }`}
-                      />
-                      <span className="font-medium">
-                        {selectedMatch.currentProject.name}
-                      </span>
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          selectedMatch.currentProject.status === "Recruiting"
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-blue-500/20 text-blue-400"
-                        }`}
-                      >
+                      <div className={`w-3 h-3 rounded-full ${
+                        selectedMatch.currentProject.status === "Recruiting" ? "bg-green-400" : "bg-blue-400"
+                      }`} />
+                      <span className="font-medium">{selectedMatch.currentProject.name}</span>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        selectedMatch.currentProject.status === "Recruiting" 
+                          ? "bg-green-500/20 text-green-400" 
+                          : "bg-blue-500/20 text-blue-400"
+                      }`}>
                         {selectedMatch.currentProject.status}
                       </span>
                     </div>
-                    <p className="text-white/80">
-                      {selectedMatch.currentProject.description}
-                    </p>
+                    <p className="text-white/80">{selectedMatch.currentProject.description}</p>
                   </div>
                 </div>
               )}
@@ -528,34 +478,22 @@ function ResultsInner() {
                 <h4 className="font-semibold mb-3">Links</h4>
                 <div className="flex gap-3">
                   {selectedMatch.links.github && (
-                    <a
-                      href={selectedMatch.links.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
-                    >
+                    <a href={selectedMatch.links.github} target="_blank" rel="noopener noreferrer" 
+                       className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors">
                       <Github className="h-4 w-4" />
                       GitHub
                     </a>
                   )}
                   {selectedMatch.links.linkedin && (
-                    <a
-                      href={selectedMatch.links.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
-                    >
+                    <a href={selectedMatch.links.linkedin} target="_blank" rel="noopener noreferrer"
+                       className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors">
                       <Linkedin className="h-4 w-4" />
                       LinkedIn
                     </a>
                   )}
                   {selectedMatch.links.portfolio && (
-                    <a
-                      href={selectedMatch.links.portfolio}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors"
-                    >
+                    <a href={selectedMatch.links.portfolio} target="_blank" rel="noopener noreferrer"
+                       className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors">
                       <ExternalLink className="h-4 w-4" />
                       Portfolio
                     </a>
@@ -565,7 +503,7 @@ function ResultsInner() {
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4 border-t border-white/10">
-                <button
+                <button 
                   onClick={() => handleSendMessage(selectedMatch.id)}
                   disabled={sendingMessage === selectedMatch.id}
                   className="flex-1 bg-white text-black py-3 px-6 rounded-xl font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -575,9 +513,9 @@ function ResultsInner() {
                   ) : (
                     <MessageCircle className="h-5 w-5" />
                   )}
-                  {sendingMessage === selectedMatch.id ? "Starting..." : "Send Message"}
+                  {sendingMessage === selectedMatch.id ? 'Starting...' : 'Send Message'}
                 </button>
-                <button
+                <button 
                   onClick={() => toggleLike(selectedMatch.id)}
                   className={`px-6 py-3 rounded-xl border transition-all ${
                     likedMatches.includes(selectedMatch.id)
@@ -585,11 +523,7 @@ function ResultsInner() {
                       : "border-white/20 bg-white/10 text-white hover:border-pink-500/50 hover:text-pink-400"
                   }`}
                 >
-                  <Heart
-                    className={`h-5 w-5 ${
-                      likedMatches.includes(selectedMatch.id) ? "fill-current" : ""
-                    }`}
-                  />
+                  <Heart className={`h-5 w-5 ${likedMatches.includes(selectedMatch.id) ? "fill-current" : ""}`} />
                 </button>
               </div>
             </div>
@@ -597,14 +531,5 @@ function ResultsInner() {
         </div>
       )}
     </div>
-  );
-}
-
-// ✅ 페이지 전체를 Suspense로 감싸서 CSR bailout 요구 충족
-export default function ResultsPage() {
-  return (
-    <Suspense fallback={<div className="p-4 text-white/70">Loading results…</div>}>
-      <ResultsInner />
-    </Suspense>
   );
 }
