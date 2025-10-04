@@ -67,16 +67,19 @@ export interface MatchedUser {
 }
 
 // 타입 가드 함수들
-export const isValidProfileData = (data: any): data is ProfileData => {
-  return data && typeof data.id === 'string' && typeof data.display_name === 'string';
+export const isValidProfileData = (data: unknown): data is ProfileData => {
+  if (!data || typeof data !== 'object') return false;
+  const obj = data as Record<string, unknown>;
+  return typeof obj.id === 'string' && typeof obj.display_name === 'string';
 };
 
-export const isValidMatchData = (data: any): data is MatchWithProfile => {
-  return data && 
-         typeof data.id === 'string' && 
-         typeof data.match_score === 'number' &&
-         data.profiles &&
-         isValidProfileData(data.profiles);
+export const isValidMatchData = (data: unknown): data is MatchWithProfile => {
+  if (!data || typeof data !== 'object') return false;
+  const obj = data as Record<string, unknown>;
+  return typeof obj.id === 'string' && 
+         typeof obj.match_score === 'number' &&
+         obj.profiles &&
+         isValidProfileData(obj.profiles);
 };
 
 // 안전한 데이터 변환 함수

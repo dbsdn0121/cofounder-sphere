@@ -202,7 +202,7 @@ export default function ProjectsPage() {
       }
 
       const currentProjects =
-        currentProjectsRes.data?.map((project: any) => ({
+        currentProjectsRes.data?.map((project: Record<string, unknown>) => ({
           id: project.id,
           name: project.name,
           description: project.description,
@@ -222,7 +222,7 @@ export default function ProjectsPage() {
         })) || [];
 
       const completedProjects =
-        completedProjectsRes.data?.map((project: any) => ({
+        completedProjectsRes.data?.map((project: Record<string, unknown>) => ({
           id: project.id,
           name: project.name,
           description: project.description,
@@ -1438,7 +1438,7 @@ function TeamFinderModal(props: any) {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-2xl font-semibold text-white">Find Partners</h3>
-              <p className="text-white/60 mt-1">for "{selectedProject?.name}"</p>
+              <p className="text-white/60 mt-1">for &quot;{selectedProject?.name}&quot;</p>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white/60 hover:text-white">
               <X className="h-5 w-5" />

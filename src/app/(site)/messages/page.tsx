@@ -566,7 +566,7 @@ export default function MessagesPage() {
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
-      // @ts-ignore
+      // @ts-expect-error - React.KeyboardEvent의 keyCode는 deprecated이지만 여전히 사용 가능
       if ((e.nativeEvent as any)?.isComposing) return;
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -768,7 +768,7 @@ export default function MessagesPage() {
             noneChecked ? "opacity-50 cursor-not-allowed" : ""
           }`}
           onKeyDown={(e) => {
-            // @ts-ignore
+            // @ts-expect-error - React.KeyboardEvent의 keyCode는 deprecated이지만 여전히 사용 가능
             if ((e.nativeEvent as any)?.isComposing) return;
             if (e.key === "Enter") e.preventDefault();
           }}
@@ -798,7 +798,7 @@ export default function MessagesPage() {
   }
 
   const formKeydownGuard = (e: React.KeyboardEvent) => {
-    // @ts-ignore
+    // @ts-expect-error - React.KeyboardEvent의 keyCode는 deprecated이지만 여전히 사용 가능
     if ((e.nativeEvent as any)?.isComposing) return;
     if (e.key === "Enter" && !e.shiftKey) e.preventDefault();
   };

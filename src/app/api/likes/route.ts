@@ -36,9 +36,9 @@ export async function POST(req: Request) {
 
     // toggle_project_like는 배열로 반환되니까 첫 번째 row만 반환
     return NextResponse.json(data?.[0] ?? { liked: false, likes_count: 0 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
-      { error: err.message ?? "Unexpected error" },
+      { error: err instanceof Error ? err.message : "Unexpected error" },
       { status: 500 }
     );
   }

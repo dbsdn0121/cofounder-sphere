@@ -454,7 +454,7 @@ export default function OnboardingPage() {
                               className="mt-1 h-4 w-4 rounded border-white/30 bg-white/10 transition-all duration-300 cursor-pointer accent-white"
                             />
                             <label htmlFor="noIdeaYet" className="text-sm text-white/85 cursor-pointer">
-                              I don't have a specific idea yet - I want to brainstorm with a partner
+                              I don&apos;t have a specific idea yet - I want to brainstorm with a partner
                             </label>
                           </div>
 
@@ -489,9 +489,9 @@ export default function OnboardingPage() {
                               <>
                                 <p className="text-sm text-white/60 mb-2">💡 Good examples:</p>
                                 <ul className="text-xs text-white/50 space-y-1">
-                                  <li>• "Small businesses can't effectively use their data"</li>
-                                  <li>• "College students face information gaps in job preparation"</li>
-                                  <li>• "Developers waste too much time on code reviews"</li>
+                                  <li>• &quot;Small businesses can&apos;t effectively use their data&quot;</li>
+                                  <li>• &quot;College students face information gaps in job preparation&quot;</li>
+                                  <li>• &quot;Developers waste too much time on code reviews&quot;</li>
                                 </ul>
                               </>
                             )}
@@ -576,7 +576,7 @@ export default function OnboardingPage() {
                               className="mt-1 h-4 w-4 rounded border-white/30 bg-white/10 transition-all duration-300 cursor-pointer accent-white"
                             />
                             <label htmlFor="decideWithPartner" className="text-sm text-white/85 cursor-pointer">
-                              I'll decide with my partner later
+                              I&apos;ll decide with my partner later
                             </label>
                           </div>
 
@@ -596,7 +596,7 @@ export default function OnboardingPage() {
                           <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
                             <p className="text-sm text-white/60 mb-2">💡 Tip:</p>
                             <p className="text-xs text-white/50">
-                              Don't worry about the perfect name. A simple name that captures the core of your project is enough.
+                              Don&apos;t worry about the perfect name. A simple name that captures the core of your project is enough.
                             </p>
                           </div>
                         </div>

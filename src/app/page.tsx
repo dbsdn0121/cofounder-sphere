@@ -2,6 +2,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -23,12 +24,12 @@ export default function LandingPage() {
           >
             Get started — it’s free
           </button>
-          <a
+          <Link
             href="/sign-in"
             className="rounded-full border border-white/20 px-6 py-3 hover:bg-white/10 transition"
           >
             Sign in
-          </a>
+          </Link>
         </div>
       </div>
     </main>

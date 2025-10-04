@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 5. 응답 데이터 변환
-    const formattedConversations = conversations?.map((conv: any) => {
+    const formattedConversations = conversations?.map((conv: Record<string, unknown>) => {
       const otherUser = conv.user1_id === profile.id ? conv.user2 : conv.user1;
       
       return {
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
     const user1Id = profile.id < withUserId ? profile.id : withUserId;
     const user2Id = profile.id < withUserId ? withUserId : profile.id;
 
-    let { data: existingConversation, error: findError } = await supabase
+    const { data: existingConversation, error: findError } = await supabase
       .from('conversations')
       .select(`
         *,

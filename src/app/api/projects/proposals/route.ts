@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
     const { count } = await countQuery;
 
     // 6. 응답 데이터 변환
-    const formattedProposals = proposals?.map((proposal: any) => ({
+    const formattedProposals = proposals?.map((proposal: Record<string, unknown>) => ({
       id: proposal.id,
       conversation_id: proposal.conversation_id,
       proposer_id: proposal.proposer_id,

@@ -16,7 +16,7 @@ export default function AvatarMenu({ imageUrl }: Props) {
   const { signOut } = useClerk();
 
   // 이미지 선택 우선순위: prop -> user.publicMetadata.avatarUrl -> user.imageUrl -> 이니셜
-  const metadataUrl = (user?.publicMetadata as any)?.avatarUrl as string | undefined;
+  const metadataUrl = (user?.publicMetadata as Record<string, unknown>)?.avatarUrl as string | undefined;
   const finalUrl = imageUrl ?? metadataUrl ?? user?.imageUrl;
 
   const [open, setOpen] = useState(false);

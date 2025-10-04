@@ -113,7 +113,7 @@ export async function GET(
     });
 
     // 7) 타입에 맞게 변환 (id 제거, null -> 기본값)
-    const matches: MatchingResultWithProfile[] = rows.map((row: any) => ({
+    const matches: MatchingResultWithProfile[] = rows.map((row: Record<string, unknown>) => ({
       id: row.id,
       matchPercentage: row.match_percentage,
       rank: row.rank,

@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       }, { status: 404 });
     }
 
-    return NextResponse.json<ApiResponse<any>>({
+    return NextResponse.json<ApiResponse<unknown>>({
       success: true,
       data: profile
     });

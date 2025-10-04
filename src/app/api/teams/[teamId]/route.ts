@@ -113,7 +113,7 @@ export async function GET(
       updated_at: team.updated_at
     };
 
-    const formattedMembers = members?.map((member: any) => ({
+    const formattedMembers = members?.map((member: Record<string, unknown>) => ({
       id: member.id,
       team_id: member.team_id,
       user_id: member.user_id,

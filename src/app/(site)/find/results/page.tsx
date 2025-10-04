@@ -28,7 +28,7 @@ import {
 type FilterType = "all" | "Developer" | "Designer" | "Product" | "Biz/Marketing";
 
 // 실제 데이터를 UI에 맞는 형태로 변환하는 함수
-const transformMatchData = (realMatches: any[]) => {
+const transformMatchData = (realMatches: Record<string, unknown>[]) => {
   return realMatches.map((match, index) => ({
     id: match.profile.id,
     name: match.profile.displayName,

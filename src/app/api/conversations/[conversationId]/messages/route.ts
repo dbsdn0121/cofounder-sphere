@@ -132,7 +132,7 @@ export async function GET(
       unread_count: 0 // 방금 읽음 처리했으므로 0
     };
 
-    const formattedMessages = messages?.map((msg: any) => ({
+    const formattedMessages = messages?.map((msg: Record<string, unknown>) => ({
       id: msg.id,
       conversation_id: msg.conversation_id,
       sender_id: msg.sender_id,

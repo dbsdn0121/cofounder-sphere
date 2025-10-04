@@ -10,9 +10,9 @@ const supabase = createClient(
 );
 
 // 배열로 올 수도, 객체로 올 수도 있는 조인 결과를 단일 객체로 정규화
-function pickOne<T = any>(v: any): T | null {
+function pickOne<T = unknown>(v: unknown): T | null {
   if (!v) return null;
-  return Array.isArray(v) ? (v[0] ?? null) : v;
+  return Array.isArray(v) ? (v[0] ?? null) : v as T;
 }
 
 export async function POST(request: NextRequest) {
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 5) metadata 보정
-    let normalizedMetadata: Record<string, any> | null = null;
+    let normalizedMetadata: Record<string, unknown> | null = null;
     if (metadata !== undefined && metadata !== null) {
       if (typeof metadata === 'string') {
         try {
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
           normalizedMetadata = { raw: metadata };
         }
       } else if (typeof metadata === 'object') {
-        normalizedMetadata = metadata as Record<string, any>;
+        normalizedMetadata = metadata as Record<string, unknown>;
       }
     }
 

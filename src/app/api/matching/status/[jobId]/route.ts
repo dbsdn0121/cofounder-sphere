@@ -11,7 +11,7 @@ const supabase = createClient(
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { jobId: string } } // ❗ Promise 아님
+  { params }: { params: Promise<{ jobId: string }> }
 ) {
   try {
     // 1) Clerk 인증

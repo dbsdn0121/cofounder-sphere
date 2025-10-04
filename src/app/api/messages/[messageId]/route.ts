@@ -9,17 +9,17 @@ const supabase = createClient(
 );
 
 // 조인 결과가 배열/객체 둘 다 올 수 있으니 단일 객체로 정규화
-function pickOne<T = any>(v: any): T | null {
+function pickOne<T = unknown>(v: unknown): T | null {
   if (!v) return null;
-  return Array.isArray(v) ? (v[0] ?? null) : v;
+  return Array.isArray(v) ? (v[0] ?? null) : v as T;
 }
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { messageId: string } }   // ✅ Promise 아님
+  { params }: { params: Promise<{ messageId: string }> }
 ) {
   try {
-    const { messageId } = params;
+    const { messageId } = await params;
 
     // 1) 인증
     const { userId: clerkUserId } = await auth();
@@ -100,7 +100,7 @@ export async function GET(
         : undefined,
     };
 
-    return NextResponse.json<ApiResponse<{ message: any }>>({
+    return NextResponse.json<ApiResponse<{ message: unknown }>>({
       success: true,
       data: { message: formattedMessage },
     });

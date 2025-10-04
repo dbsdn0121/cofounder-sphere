@@ -1,6 +1,12 @@
 // lib/supabase.ts
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
+// 클라이언트용 기본 Supabase 인스턴스 (환경변수 기반)
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 /**
  * Clerk의 getToken 함수를 주입받아,
  * 매 요청마다 Authorization 헤더에 Clerk JWT를 실어주는
@@ -59,7 +65,7 @@ export async function getCurrentUserProfileByClerk(
 export async function ensureProfileByClerk(
   supabase: SupabaseClient,
   clerkUserId: string,
-  defaults?: Record<string, any>
+  defaults?: Record<string, unknown>
 ) {
   const current = await getCurrentUserProfileByClerk(supabase, clerkUserId);
   if (current) return current;

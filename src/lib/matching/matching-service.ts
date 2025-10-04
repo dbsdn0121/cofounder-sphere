@@ -174,7 +174,7 @@ async function updateJobStatus(
   currentStep: string,
   errorMessage?: string
 ): Promise<void> {
-  const updateData: any = {
+  const updateData: Record<string, unknown> = {
     status,
     progress,
     current_step: currentStep

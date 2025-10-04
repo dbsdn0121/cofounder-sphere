@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,10 +12,11 @@ export async function POST(
   );
 
   const { receiver_id } = await req.json(); // 내 profiles.id
+  const { id } = await params;
 
   const { data, error } = await supabase
     .rpc('accept_proposal_current', {
-      p_proposal_id: params.id,
+      p_proposal_id: id,
       p_receiver: receiver_id
     });
 

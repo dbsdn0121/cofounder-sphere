@@ -599,7 +599,7 @@ export default function OnboardingPage() {
                               className="mt-1 h-4 w-4 rounded border-white/30 bg-white/10 transition-all duration-300 cursor-pointer"
                             />
                             <label htmlFor="decideWithPartner" className="text-sm text-white/85 cursor-pointer">
-                              I'll decide with my partner
+                              I&apos;ll decide with my partner
                             </label>
                           </div>
 

@@ -246,7 +246,7 @@ export default function PartnerFinderOnboarding() {
                     What type of partner are you looking for?
                   </h2>
                   <p className="text-white/70 mb-8 max-w-2xl mx-auto">
-                    Select the roles that would complement your project "{projectName}"
+                    Select the roles that would complement your project &quot;{projectName}&quot;
                   </p>
                   
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-4xl mx-auto">
